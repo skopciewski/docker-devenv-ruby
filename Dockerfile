@@ -38,7 +38,7 @@ RUN gem install pry
 RUN bundle config build.nokogiri --use-system-libraries
 
 # Prepare dotfiles
-ENV DEVDOTFILES_VIM_RUNB_VER=1.0.0
+ENV DEVDOTFILES_VIM_RUNB_VER=1.0.1
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
   && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/v${DEVDOTFILES_VIM_RUNB_VER}.tar.gz | tar xz \
