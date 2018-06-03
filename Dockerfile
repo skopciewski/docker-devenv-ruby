@@ -42,7 +42,7 @@ ENV DEVDOTFILES_VIM_RUNB_VER=1.0.0
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
   && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/v${DEVDOTFILES_VIM_RUNB_VER}.tar.gz | tar xz \
-  && cd dotfiles_vim_clojure-${DEVDOTFILES_VIM_RUNB_VER} \
+  && cd dotfiles_vim_ruby-${DEVDOTFILES_VIM_RUNB_VER} \
   && PATH=/home/${user}/sbin:$PATH make
 
 ENV ZSH_TMUX_AUTOSTART=true \
