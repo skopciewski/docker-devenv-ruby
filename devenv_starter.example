@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -eo pipefail
+[[ "$TRACE" ]] && set -x
+
+DOCKER_IMAGE=skopciewski/devenv-ruby
+DEVDIR=/mnt/devdir
+XSOCK=/tmp/.X11-unix
+DBUSCOCK=/run/user/$(id -u)/bus
+
+run_devenv() {
+  local volume="$1"
+  local params=""
+  params+=" -it --rm"
+  params+=" --hostname=devenv"
+  params+=" --net=host"
+  params+=" -e TZ=$(date +%Z)"
+  params+=" -e DISPLAY"
+  params+=" -e SSH_AUTH_SOCK"
+  params+=" -e DBUS_SESSION_BUS_ADDRESS"
+  params+=" -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK)"
+  params+=" -v ${XSOCK}:${XSOCK}"
+  params+=" -v ${DBUSCOCK}:${DBUSCOCK}"
+  if [[ -n $volume ]]; then
+    params+=" -v $volume:${DEVDIR}"
+  fi
+  docker run ${params} ${DOCKER_IMAGE}
+}
+
+main() {
+  local volume="${1}"
+  run_devenv "$volume"
+}
+
+[[ "$0" == "$BASH_SOURCE" ]] && main "$@"
