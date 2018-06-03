@@ -7,6 +7,7 @@ RUN apk add --no-cache \
       libnotify \
       ruby \
       ruby-io-console \
+      ruby-irb \
       ruby-bundler \
       ruby-rake \
       ca-certificates \
