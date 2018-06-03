@@ -27,7 +27,7 @@ RUN bundle config console pry \
 
 # copy gemrc and gem utils
 COPY data/gemrc /home/${user}/.gemrc
-RUN gem install pry json
+RUN GEM_HOME=$(ruby -e "print Gem.user_dir") gem install pry json
 
 # Prepare dotfiles
 ENV DEVDOTFILES_VIM_RUNB_VER=1.0.1
