@@ -34,7 +34,7 @@ RUN bundle config path "$GEM_HOME" \
 # copy gemrc and gem utils
 COPY data/gemrc /home/${user}/.gemrc
 
-RUN gem install pry
+RUN gem install pry json
 RUN bundle config build.nokogiri --use-system-libraries
 
 # Prepare dotfiles
