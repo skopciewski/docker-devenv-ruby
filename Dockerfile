@@ -17,25 +17,17 @@ RUN apk add --no-cache \
 ARG user=dev
 USER ${user}
 
-# install gems globally, for great justice
-ENV GEM_HOME /home/${user}/opt/gems
-ENV PATH $GEM_HOME/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-
-# local bundler config outside project
+# configure bundler
 ENV BUNDLE_APP_CONFIG  /home/${user}/opt/bundle
 RUN mkdir ${BUNDLE_APP_CONFIG} \
   && touch ${BUNDLE_APP_CONFIG}/config 
 
-# configure bundler to use global gems
-RUN bundle config path "$GEM_HOME" \
-  && bundle config bin "$GEM_HOME/bin" \
-  && bundle config console pry
+RUN bundle config console pry \
+  && bundle config build.nokogiri --use-system-libraries
 
 # copy gemrc and gem utils
 COPY data/gemrc /home/${user}/.gemrc
-
 RUN gem install pry json
-RUN bundle config build.nokogiri --use-system-libraries
 
 # Prepare dotfiles
 ENV DEVDOTFILES_VIM_RUNB_VER=1.0.1
