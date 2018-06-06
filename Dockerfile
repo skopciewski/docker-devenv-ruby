@@ -3,28 +3,28 @@ FROM skopciewski/devenv-base
 USER root
 
 RUN apk add --no-cache \
+      build-base \
+      ca-certificates \
       ctags \
+      libffi-dev \
       libnotify \
       ruby \
+      ruby-bundler \
+      ruby-dev \
       ruby-io-console \
       ruby-irb \
-      ruby-bundler \
-      ruby-rake \
-      ca-certificates \
-      build-base \
-      libffi-dev \
-      ruby-dev
+      ruby-rake
 
 ARG user=dev
 USER ${user}
 
-# configure bundler
-ENV BUNDLE_APP_CONFIG  /home/${user}/opt/bundle
-RUN mkdir ${BUNDLE_APP_CONFIG} \
-  && touch ${BUNDLE_APP_CONFIG}/config 
-
-RUN bundle config console pry \
-  && bundle config build.nokogiri --use-system-libraries
+# configure bundler to keep things outside the app
+ENV BUNDLE_APP_GEMS  /home/${user}/opt/gems
+RUN mkdir "${BUNDLE_APP_GEMS}" \
+  && bundle config console pry \
+  && bundle config build.nokogiri --use-system-libraries \
+  && bundle config path "${BUNDLE_APP_GEMS}" \
+  && bundle config bin "${BUNDLE_APP_GEMS}/bin"
 
 # copy gemrc and gem utils
 COPY data/gemrc /home/${user}/.gemrc
