@@ -31,7 +31,7 @@ COPY data/gemrc /home/${user}/.gemrc
 RUN GEM_HOME=$(ruby -e "print Gem.user_dir") gem install pry json
 
 # Prepare dotfiles
-ENV DEVDOTFILES_VIM_RUNB_VER=1.0.1
+ENV DEVDOTFILES_VIM_RUNB_VER=1.0.2
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
   && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/v${DEVDOTFILES_VIM_RUNB_VER}.tar.gz | tar xz \
