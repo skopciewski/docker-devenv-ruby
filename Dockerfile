@@ -11,6 +11,7 @@ RUN apk add --no-cache \
       ruby \
       ruby-bundler \
       ruby-dev \
+      ruby-etc \
       ruby-io-console \
       ruby-irb \
       ruby-rake
