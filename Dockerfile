@@ -9,6 +9,7 @@ RUN apk add --no-cache \
       libffi-dev \
       libnotify \
       ruby \
+      ruby-bigdecimal \
       ruby-bundler \
       ruby-dev \
       ruby-etc \
