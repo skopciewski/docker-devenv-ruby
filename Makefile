@@ -4,5 +4,10 @@ build:
 .PHONY: build
 
 deploy:
-	docker push skopciewski/devenv-ruby
+	@[ "$(BUILD_RUBY_VERSION)" ] || ( echo "!! BUILD_RUBY_VERSION is not set"; exit 1 )
+	docker push skopciewski/devenv-ruby:$(BUILD_RUBY_VERSION)
 .PHONY: deploy
+
+deploy_all:
+	docker push skopciewski/devenv-ruby
+.PHONY: deploy_all
