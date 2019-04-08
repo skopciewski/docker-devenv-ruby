@@ -1,13 +1,7 @@
-build: build-2.5 build-2.6
+build:
+	@[ "$(BUILD_RUBY_VERSION)" ] || ( echo "!! BUILD_RUBY_VERSION is not set"; exit 1 )
+	docker build -t skopciewski/devenv-ruby:$(BUILD_RUBY_VERSION) . --build-arg BUILD_RUBY_VERSION=$(BUILD_RUBY_VERSION)
 .PHONY: build
-
-build-2.5:
-	docker build -t skopciewski/devenv-ruby:2.5 . --build-arg BUILD_RUBY_VERSION=2.5
-.PHONY: build-2.5
-
-build-2.6:
-	docker build -t skopciewski/devenv-ruby:2.6 . --build-arg BUILD_RUBY_VERSION=2.6
-.PHONY: build-2.6
 
 deploy:
 	docker push skopciewski/devenv-ruby
