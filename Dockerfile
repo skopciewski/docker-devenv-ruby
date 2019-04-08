@@ -1,24 +1,63 @@
-FROM skopciewski/devenv-base
-
-USER root
+ARG BUILD_RUBY_VERSION
+FROM ruby:${BUILD_RUBY_VERSION}-alpine
 
 RUN apk add --no-cache \
-      build-base \
-      ca-certificates \
-      ctags \
-      libffi-dev \
-      libnotify \
-      ruby \
-      ruby-bigdecimal \
-      ruby-bundler \
-      ruby-dev \
-      ruby-etc \
-      ruby-io-console \
-      ruby-irb \
-      ruby-rake
+  ack \
+  bash \
+  build-base \
+  ca-certificates \
+  coreutils \
+  ctags \
+  curl \
+  git \
+  grep \
+  htop \
+  jq \
+  less \
+  libffi-dev \
+  libnotify \
+  make \
+  mc \
+  ncdu \
+  ncurses \
+  openssh-client \
+  sudo \
+  tmux \
+  tree \
+  tzdata \
+  util-linux \
+  vim \
+  zsh 
 
 ARG user=dev
+ARG uid=1000
+ARG gid=1000
+ENV LANG=C.UTF-8
+RUN echo 'export LANG="C.UTF-8"' > /etc/profile.d/lang.sh \
+  && mv /etc/profile.d/color_prompt /etc/profile.d/color_prompt.sh \
+  && addgroup -g ${gid} ${user} \
+  && adduser -h /home/${user} -D -u ${uid} -G ${user} -s /bin/zsh ${user} \
+  && echo "${user} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${user}" \
+  && chmod 0440 "/etc/sudoers.d/${user}"
+
 USER ${user}
+
+ENV DEVDOTFILES_BASE_VER=1.0.8
+RUN mkdir -p /home/${user}/opt \
+  && cd /home/${user}/opt \
+  && curl -fsSL https://github.com/skopciewski/dotfiles_base/archive/v${DEVDOTFILES_BASE_VER}.tar.gz | tar xz \
+  && cd dotfiles_base-${DEVDOTFILES_BASE_VER} \
+  && make
+
+ENV DEVDOTFILES_VIM_VER=1.1.8
+RUN mkdir -p /home/${user}/opt \
+  && cd /home/${user}/opt \
+  && curl -fsSL https://github.com/skopciewski/dotfiles_vim/archive/v${DEVDOTFILES_VIM_VER}.tar.gz | tar xz \
+  && cd dotfiles_vim-${DEVDOTFILES_VIM_VER} \
+  && make
+
+ENV DEVDIR=/mnt/devdir
+WORKDIR ${DEVDIR}
 
 # configure bundler to keep things outside the app
 ENV BUNDLE_APP_GEMS  /home/${user}/opt/gems
@@ -33,12 +72,14 @@ COPY data/gemrc /home/${user}/.gemrc
 RUN GEM_HOME=$(ruby -e "print Gem.user_dir") gem install pry json
 
 # Prepare dotfiles
-ENV DEVDOTFILES_VIM_RUNB_VER=1.0.5
+ARG BUILD_RUBY_VERSION
+ENV DEVDOTFILES_VIM_RUBY_VER=1.0.5
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
-  && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/v${DEVDOTFILES_VIM_RUNB_VER}.tar.gz | tar xz \
-  && cd dotfiles_vim_ruby-${DEVDOTFILES_VIM_RUNB_VER} \
-  && PATH=/home/${user}/sbin:$PATH make
+  && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/v${DEVDOTFILES_VIM_RUBY_VER}.tar.gz | tar xz \
+  && cd dotfiles_vim_ruby-${DEVDOTFILES_VIM_RUBY_VER} \
+  && PATH=/home/${user}/sbin:$PATH make \
+  && sed -i -e "s/TargetRubyVersion: .*/TargetRubyVersion: ${BUILD_RUBY_VERSION}/" /home/${user}/.rubocop.yml
 
 ENV ZSH_TMUX_AUTOSTART=true \
   ZSH_TMUX_AUTOSTART_ONCE=true \
