@@ -6,9 +6,10 @@ DOCKER_IMAGE=skopciewski/devenv-ruby
 DEVDIR=/mnt/devdir
 XSOCK=/tmp/.X11-unix
 DBUSCOCK=/run/user/$(id -u)/bus
+DIR=$PWD
 
 run_devenv() {
-  local volume="$1"
+  local version="$1"
   local params=""
   params+=" -it --rm"
   params+=" --hostname=devenv"
@@ -20,15 +21,13 @@ run_devenv() {
   params+=" -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK)"
   params+=" -v ${XSOCK}:${XSOCK}"
   params+=" -v ${DBUSCOCK}:${DBUSCOCK}"
-  if [[ -n $volume ]]; then
-    params+=" -v $volume:${DEVDIR}"
-  fi
-  docker run ${params} ${DOCKER_IMAGE}
+  params+=" -v ${DIR}:${DEVDIR}"
+  docker run ${params} ${DOCKER_IMAGE}:${version}
 }
 
 main() {
-  local volume="${1}"
-  run_devenv "$volume"
+  local version="${1:-2.5}"
+  run_devenv "$version"
 }
 
 [[ "$0" == "$BASH_SOURCE" ]] && main "$@"
