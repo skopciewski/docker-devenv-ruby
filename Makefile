@@ -3,11 +3,11 @@ build:
 	docker build -t skopciewski/devenv-ruby:$(BUILD_RUBY_VERSION) . --build-arg BUILD_RUBY_VERSION=$(BUILD_RUBY_VERSION)
 .PHONY: build
 
-deploy:
+push:
 	@[ "$(BUILD_RUBY_VERSION)" ] || ( echo "!! BUILD_RUBY_VERSION is not set"; exit 1 )
 	docker push skopciewski/devenv-ruby:$(BUILD_RUBY_VERSION)
 .PHONY: deploy
 
-deploy_all:
+push_all:
 	docker push skopciewski/devenv-ruby
 .PHONY: deploy_all
