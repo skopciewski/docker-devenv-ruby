@@ -1,6 +1,9 @@
 ARG BUILD_RUBY_VERSION
 FROM ruby:${BUILD_RUBY_VERSION}-alpine
 
+RUN echo "@testing http://dl-4.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+RUN echo "@edge http://dl-4.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
+
 RUN apk add --no-cache \
   ack \
   bash \
@@ -12,6 +15,7 @@ RUN apk add --no-cache \
   git \
   grep \
   htop \
+  hub@testing\
   jq \
   less \
   libffi-dev \
@@ -22,7 +26,7 @@ RUN apk add --no-cache \
   ncurses \
   openssh-client \
   sudo \
-  tmux \
+  tmux@edge \
   tree \
   tzdata \
   util-linux \
@@ -42,7 +46,7 @@ RUN echo 'export LANG="C.UTF-8"' > /etc/profile.d/lang.sh \
 
 USER ${user}
 
-ENV DEVDOTFILES_BASE_VER=1.0.8
+ENV DEVDOTFILES_BASE_VER=1.1.0
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
   && curl -fsSL https://github.com/skopciewski/dotfiles_base/archive/v${DEVDOTFILES_BASE_VER}.tar.gz | tar xz \
