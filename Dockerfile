@@ -31,7 +31,8 @@ RUN apk add --no-cache \
   tzdata \
   util-linux \
   vim \
-  zsh 
+  zsh \
+  zsh-vcs
 
 ARG user=dev
 ARG uid=1000
