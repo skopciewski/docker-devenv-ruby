@@ -1,3 +1,5 @@
+TM := $(shell date +%Y%m%d)
+
 build:
 	@[ "$(BUILD_RUBY_VERSION)" ] || ( echo "!! BUILD_RUBY_VERSION is not set"; exit 1 )
 	docker build \
@@ -11,6 +13,8 @@ build:
 push:
 	@[ "$(BUILD_RUBY_VERSION)" ] || ( echo "!! BUILD_RUBY_VERSION is not set"; exit 1 )
 	docker push skopciewski/devenv-ruby:$(BUILD_RUBY_VERSION)
+	docker tag skopciewski/devenv-ruby:$(BUILD_RUBY_VERSION) skopciewski/devenv-ruby:$(BUILD_RUBY_VERSION)_$(TM)
+	docker push skopciewski/devenv-ruby:$(BUILD_RUBY_VERSION)_$(TM)
 .PHONY: push
 
 push_all:
