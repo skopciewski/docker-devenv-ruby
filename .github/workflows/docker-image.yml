@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: '1' # to enable persistent docker cache
+      BUILD_RUBY_VERSION: ${{ matrix.version }}
     steps:
     - uses: actions/checkout@v2
     
