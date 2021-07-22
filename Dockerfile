@@ -79,7 +79,7 @@ RUN GEM_HOME=$(ruby -e "print Gem.user_dir") gem install pry json
 
 # Prepare dotfiles
 ARG BUILD_RUBY_VERSION
-ENV DEVDOTFILES_VIM_RUBY_VER=1.0.11
+ENV DEVDOTFILES_VIM_RUBY_VER=1.0.12
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
   && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/v${DEVDOTFILES_VIM_RUBY_VER}.tar.gz | tar xz \
