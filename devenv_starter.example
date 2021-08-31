@@ -14,7 +14,7 @@ run_devenv() {
   params+=" -it --rm"
   params+=" --hostname=devenv"
   params+=" --net=host"
-  params+=" -e TZ=$(date +%Z)"
+  params+=" -e TZ=$(timedatectl show --va -p Timezone)"
   params+=" -e DISPLAY"
   params+=" -e SSH_AUTH_SOCK"
   params+=" -e DBUS_SESSION_BUS_ADDRESS"
