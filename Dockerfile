@@ -48,17 +48,17 @@ RUN echo 'export LANG="C.UTF-8"' > /etc/profile.d/lang.sh \
 
 USER ${user}
 
-ENV DEVDOTFILES_BASE_VER=1.1.2
+ENV DEVDOTFILES_BASE_VER=1.2.3
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
-  && curl -fsSL https://github.com/skopciewski/dotfiles_base/archive/v${DEVDOTFILES_BASE_VER}.tar.gz | tar xz \
+  && curl -fsSL https://github.com/skopciewski/dotfiles_base/archive/${DEVDOTFILES_BASE_VER}.tar.gz | tar xz \
   && cd dotfiles_base-${DEVDOTFILES_BASE_VER} \
   && make
 
 ENV DEVDOTFILES_VIM_VER=1.1.9
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
-  && curl -fsSL https://github.com/skopciewski/dotfiles_vim/archive/v${DEVDOTFILES_VIM_VER}.tar.gz | tar xz \
+  && curl -fsSL https://github.com/skopciewski/dotfiles_vim/archive/${DEVDOTFILES_VIM_VER}.tar.gz | tar xz \
   && cd dotfiles_vim-${DEVDOTFILES_VIM_VER} \
   && make
 
@@ -79,10 +79,10 @@ RUN GEM_HOME=$(ruby -e "print Gem.user_dir") gem install pry json
 
 # Prepare dotfiles
 ARG BUILD_RUBY_VERSION
-ENV DEVDOTFILES_VIM_RUBY_VER=1.0.12
+ENV DEVDOTFILES_VIM_RUBY_VER=1.0.14
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
-  && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/v${DEVDOTFILES_VIM_RUBY_VER}.tar.gz | tar xz \
+  && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/${DEVDOTFILES_VIM_RUBY_VER}.tar.gz | tar xz \
   && cd dotfiles_vim_ruby-${DEVDOTFILES_VIM_RUBY_VER} \
   && PATH=/home/${user}/sbin:$PATH make \
   && sed -i -e "s/TargetRubyVersion: .*/TargetRubyVersion: ${BUILD_RUBY_VERSION}/" /home/${user}/.rubocop.yml
