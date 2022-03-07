@@ -47,14 +47,14 @@ RUN echo 'export LANG="C.UTF-8"' > /etc/profile.d/lang.sh \
 
 USER ${user}
 
-ENV DEVDOTFILES_BASE_VER=1.2.3
+ENV DEVDOTFILES_BASE_VER=1.3.0
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
   && curl -fsSL https://github.com/skopciewski/dotfiles_base/archive/${DEVDOTFILES_BASE_VER}.tar.gz | tar xz \
   && cd dotfiles_base-${DEVDOTFILES_BASE_VER} \
   && make
 
-ENV DEVDOTFILES_VIM_VER=1.1.9
+ENV DEVDOTFILES_VIM_VER=1.4.1
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
   && curl -fsSL https://github.com/skopciewski/dotfiles_vim/archive/${DEVDOTFILES_VIM_VER}.tar.gz | tar xz \
@@ -78,7 +78,7 @@ RUN GEM_HOME=$(ruby -e "print Gem.user_dir") gem install pry json
 
 # Prepare dotfiles
 ARG BUILD_RUBY_VERSION
-ENV DEVDOTFILES_VIM_RUBY_VER=1.0.14
+ENV DEVDOTFILES_VIM_RUBY_VER=1.0.15
 RUN mkdir -p /home/${user}/opt \
   && cd /home/${user}/opt \
   && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/${DEVDOTFILES_VIM_RUBY_VER}.tar.gz | tar xz \
@@ -90,7 +90,6 @@ ENV ZSH_TMUX_AUTOSTART=true \
   ZSH_TMUX_AUTOSTART_ONCE=true \
   ZSH_TMUX_AUTOCONNECT=false \
   ZSH_TMUX_AUTOQUIT=false \
-  ZSH_TMUX_FIXTERM=false \
-  TERM=xterm-256color
+  ZSH_TMUX_FIXTERM=false
 
 CMD ["/bin/zsh"]
