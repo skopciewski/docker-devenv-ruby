@@ -90,6 +90,7 @@ ENV ZSH_TMUX_AUTOSTART=true \
   ZSH_TMUX_AUTOSTART_ONCE=true \
   ZSH_TMUX_AUTOCONNECT=false \
   ZSH_TMUX_AUTOQUIT=false \
-  ZSH_TMUX_FIXTERM=false
+  ZSH_TMUX_FIXTERM=false \
+  TERM=xterm-256color
 
 CMD ["/bin/zsh"]
