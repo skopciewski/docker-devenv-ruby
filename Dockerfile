@@ -66,6 +66,7 @@ COPY --chown=${user}:${user} data/ftplugin/ /home/${user}/.vim/ftplugin/
 COPY --chown=${user}:${user} data/coc-settings.json /home/${user}/.vim/
 COPY --chown=${user}:${user} data/stylelintrc /mnt/.stylelintrc
 COPY --chown=${user}:${user} data/tidyrc /mnt/.tidyrc
+RUN rm -f /home/${user}/.vim/plugin/base/ale.vim
 RUN mkdir -p /home/${user}/.vim/pack/ruby/start \
   && for plugin in $(cat /home/${user}/vim_plugins.txt); do \
     echo "*** Installing: $plugin ***"; \
