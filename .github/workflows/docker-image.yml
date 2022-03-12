@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        version: [2.7, 3.0]
+        version: ["2.7", "3.0"]
     runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: '1' # to enable persistent docker cache
