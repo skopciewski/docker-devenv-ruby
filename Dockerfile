@@ -1,96 +1,79 @@
+FROM skopciewski/devenv-base:latest
 ARG BUILD_RUBY_VERSION
-FROM ruby:${BUILD_RUBY_VERSION}-alpine
 
-RUN echo "@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
+USER root
+
+RUN \
+  : "${BUILD_RUBY_VERSION:?Build argument BUILD_RUBY_VERSION needs to be set and non-empty.}" \
+  && echo "${BUILD_RUBY_VERSION}" > /.ruby-version
 
 RUN apk add --no-cache \
-  ack \
-  bash \
   build-base \
   ca-certificates \
-  coreutils \
-  ctags \
-  curl \
-  git \
-  grep \
-  htop \
-  hub@testing\
-  jq \
-  less \
+  gdbm-dev \
   libffi-dev \
-  libnotify \
-  make \
-  mc \
-  ncdu \
-  ncurses \
-  openssh-client \
-  sudo \
-  tmux \
-  tree \
-  tzdata \
-  util-linux \
-  vim \
-  zsh \
-  zsh-vcs
+  libxml2-dev \
+  libxslt-dev \
+  npm \
+  openssl-dev \
+  readline-dev \
+  tidyhtml \
+  yaml-dev \
+  zlib-dev
 
 ARG user=dev
-ARG uid=1000
-ARG gid=1000
-ENV LANG=C.UTF-8
-RUN echo 'export LANG="C.UTF-8"' > /etc/profile.d/lang.sh \
-  && mv /etc/profile.d/color_prompt /etc/profile.d/color_prompt.sh || true \
-  && mv /etc/profile.d/color_prompt.sh.disabled /etc/profile.d/color_prompt.sh || true \
-  && addgroup -g ${gid} ${user} \
-  && adduser -h /home/${user} -D -u ${uid} -G ${user} -s /bin/zsh ${user} \
-  && echo "${user} ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/${user}" \
-  && chmod 0440 "/etc/sudoers.d/${user}"
-
 USER ${user}
 
-ENV DEVDOTFILES_BASE_VER=1.3.1
-RUN mkdir -p /home/${user}/opt \
-  && cd /home/${user}/opt \
-  && curl -fsSL https://github.com/skopciewski/dotfiles_base/archive/${DEVDOTFILES_BASE_VER}.tar.gz | tar xz \
-  && cd dotfiles_base-${DEVDOTFILES_BASE_VER} \
-  && make
+# install ruby
+COPY --chown=${user}:${user} data/gemrc /home/${user}/.gemrc
+COPY --chown=${user}:${user} data/chruby.zshrc /home/${user}/.zshrc_local_conf/
+RUN mkdir -p /home/${user}/src \
+  && cd /home/${user}/src \
+  && wget -O ruby-install-0.8.3.tar.gz https://github.com/postmodern/ruby-install/archive/v0.8.3.tar.gz \
+  && tar -xzf ruby-install-0.8.3.tar.gz \
+  && cd ruby-install-0.8.3/ \
+  && sudo make install \
+  && cd .. \
+  && wget -O chruby-0.3.9.tar.gz https://github.com/postmodern/chruby/archive/v0.3.9.tar.gz \
+  && tar -xzvf chruby-0.3.9.tar.gz \
+  && cd chruby-0.3.9/ \
+  && sudo make install \
+  && cd ../.. \
+  && ruby-install -j "$(nproc)" ruby ${BUILD_RUBY_VERSION} -- --enable-shared --disable-install-doc \
+  && rm -rf /home/${user}/src
 
-ENV DEVDOTFILES_VIM_VER=1.4.1
-RUN mkdir -p /home/${user}/opt \
-  && cd /home/${user}/opt \
-  && curl -fsSL https://github.com/skopciewski/dotfiles_vim/archive/${DEVDOTFILES_VIM_VER}.tar.gz | tar xz \
-  && cd dotfiles_vim-${DEVDOTFILES_VIM_VER} \
-  && make
-
-ENV DEVDIR=/mnt/devdir
-WORKDIR ${DEVDIR}
-
-# configure bundler to keep things outside the app
-ENV BUNDLE_APP_GEMS  /home/${user}/opt/gems
-RUN mkdir "${BUNDLE_APP_GEMS}" \
+# configure bundler to keep things outside the app, install utils
+SHELL ["/bin/zsh", "-c"]
+RUN \
+  source /usr/local/share/chruby/chruby.sh \
+  && chruby ruby-${BUILD_RUBY_VERSION} \
   && bundle config console pry \
   && bundle config build.nokogiri --use-system-libraries \
-  && bundle config path "${BUNDLE_APP_GEMS}" \
-  && bundle config bin "${BUNDLE_APP_GEMS}/bin"
+  && gem install pry json standardrb
+SHELL ["/bin/sh", "-c"]
 
-# copy gemrc and gem utils
-COPY data/gemrc /home/${user}/.gemrc
-RUN GEM_HOME=$(ruby -e "print Gem.user_dir") gem install pry json
+# configure npm
+ENV HOST_NODE_MODULES /home/${user}/.npm/modules
+RUN mkdir -p "${HOST_NODE_MODULES}" \
+  && npm config set prefix ${HOST_NODE_MODULES} \
+  && echo "export PATH=${HOST_NODE_MODULES}/bin:$PATH" > /home/${user}/.zshrc_local_conf/npm_env.zshrc \
+  && npm install --global stylelint stylelint-config-standard standard
 
-# Prepare dotfiles
-ARG BUILD_RUBY_VERSION
-ENV DEVDOTFILES_VIM_RUBY_VER=1.0.16
-RUN mkdir -p /home/${user}/opt \
-  && cd /home/${user}/opt \
-  && curl -fsSL https://github.com/skopciewski/dotfiles_vim_ruby/archive/${DEVDOTFILES_VIM_RUBY_VER}.tar.gz | tar xz \
-  && cd dotfiles_vim_ruby-${DEVDOTFILES_VIM_RUBY_VER} \
-  && PATH=/home/${user}/sbin:$PATH make \
-  && sed -i -e "s/TargetRubyVersion: .*/TargetRubyVersion: ${BUILD_RUBY_VERSION}/" /home/${user}/.rubocop.yml
-
-ENV ZSH_TMUX_AUTOSTART=true \
-  ZSH_TMUX_AUTOSTART_ONCE=true \
-  ZSH_TMUX_AUTOCONNECT=false \
-  ZSH_TMUX_AUTOQUIT=false \
-  ZSH_TMUX_FIXTERM=false \
-  TERM=xterm-256color
+# configure vim
+COPY --chown=${user}:${user} data/vim_plugins.txt /home/${user}/
+COPY --chown=${user}:${user} data/plugin/ /home/${user}/.vim/plugin/
+COPY --chown=${user}:${user} data/ftplugin/ /home/${user}/.vim/ftplugin/
+COPY --chown=${user}:${user} data/coc-settings.json /home/${user}/.vim/
+COPY --chown=${user}:${user} data/stylelintrc /mnt/.stylelintrc
+COPY --chown=${user}:${user} data/tidyrc /mnt/.tidyrc
+RUN mkdir -p /home/${user}/.vim/pack/ruby/start \
+  && for plugin in $(cat /home/${user}/vim_plugins.txt); do \
+    echo "*** Installing: $plugin ***"; \
+    $(cd /home/${user}/.vim/pack/ruby/start/ && git clone --depth 1 $plugin 2>/dev/null); \
+  done \
+  && echo "*** Installing: coc ***" \
+  && $(cd /home/${user}/.vim/pack/ruby/start/ && git clone --branch release https://github.com/neoclide/coc.nvim.git --depth=1 2>/dev/null) \
+  && mkdir -p /home/${user}/.config/coc \
+  && vim -c 'CocInstall -sync coc-solargraph coc-html coc-json coc-css|qall'
 
 CMD ["/bin/zsh"]

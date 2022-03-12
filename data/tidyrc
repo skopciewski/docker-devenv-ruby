@@ -1,0 +1,5 @@
+indent: auto
+indent-spaces: 2
+indent-attributes: no
+vertical-space: yes
+wrap: 90
