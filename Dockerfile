@@ -44,11 +44,16 @@ RUN mkdir -p /home/${user}/src \
 
 # configure bundler to keep things outside the app, install utils
 SHELL ["/bin/zsh", "-c"]
+ENV BUNDLE_APP_GEMS /mnt/gems
 RUN \
-  source /usr/local/share/chruby/chruby.sh \
+  sudo mkdir -p ${BUNDLE_APP_GEMS} \
+  && chown ${user}:${user} ${BUNDLE_APP_GEMS} \
+  && source /usr/local/share/chruby/chruby.sh \
   && chruby ruby-${BUILD_RUBY_VERSION} \
   && bundle config console pry \
   && bundle config build.nokogiri --use-system-libraries \
+  && bundle config path "${BUNDLE_APP_GEMS}" \
+  && bundle config bin "${BUNDLE_APP_GEMS}/bin" \
   && gem install pry json standardrb
 SHELL ["/bin/sh", "-c"]
 
