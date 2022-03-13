@@ -10,9 +10,25 @@ DIR=$PWD
 
 calculate_share() {
   local s_dir="${DIR}/_share_"
-  if [ -L "${s_dir}" ]; then
+  if [[ -L "${s_dir}" ]]; then
     local s_dest="$(dirname $(readlink -f ${s_dir}))"
     echo " -v ${s_dest}:${s_dest}"
+  fi
+}
+
+check_tmuxp() {
+  local t_file="${DIR}/.tmuxp.yaml"
+  if [[ -e "${t_file}" ]]; then
+    echo ' -e ZSH_TMUXP_AUTOSTART=.'
+  fi
+}
+
+calculate_cache() {
+  local cache="$1"
+  if [[ ! -z "${cache}" ]]; then
+    if [[ -d "${cache}" ]]; then
+      echo " -v ${cache}:/mnt/gems"
+    fi
   fi
 }
 
@@ -27,11 +43,13 @@ run_devenv() {
   params+=" -e DISPLAY"
   params+=" -e SSH_AUTH_SOCK"
   params+=" -e DBUS_SESSION_BUS_ADDRESS"
+  params+="$(check_tmuxp)"
   params+=" -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK)"
   params+=" -v ${XSOCK}:${XSOCK}"
   params+=" -v ${DBUSCOCK}:${DBUSCOCK}"
   params+=" -v ${DIR}:${DEVDIR}"
-  params+=$(calculate_share)
+  params+="$(calculate_share)"
+  params+="$(calculate_cache "${cache}")"
   docker run ${params} ${DOCKER_IMAGE}:${version}
 }
 
