@@ -56,7 +56,7 @@ SHELL ["/bin/sh", "-c"]
 ENV HOST_NODE_MODULES /home/${user}/.npm/modules
 RUN mkdir -p "${HOST_NODE_MODULES}" \
   && npm config set prefix ${HOST_NODE_MODULES} \
-  && echo "export PATH=${HOST_NODE_MODULES}/bin:$PATH" > /home/${user}/.zshrc_local_conf/npm_env.zshrc \
+  && echo "export PATH=${HOST_NODE_MODULES}/bin:\$PATH" > /home/${user}/.zshrc_local_conf/npm_env.zshrc \
   && npm install --global stylelint stylelint-config-standard standard
 
 # configure vim
