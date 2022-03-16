@@ -27,7 +27,9 @@ calculate_cache() {
   local cache="$1"
   if [[ ! -z "${cache}" ]]; then
     if [[ -d "${cache}" ]]; then
-      echo " -v ${cache}:/mnt/gems"
+      local project_cache="${cache}/$(basename ${DIR})"
+      mkdir -p ${project_cache}
+      echo " -v ${project_cache}:/mnt/gems"
     fi
   fi
 }
