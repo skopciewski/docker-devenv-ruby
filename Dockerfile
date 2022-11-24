@@ -78,7 +78,7 @@ RUN mkdir -p /home/${user}/.vim/pack/ruby/start \
     $(cd /home/${user}/.vim/pack/ruby/start/ && git clone --depth 1 $plugin 2>/dev/null); \
   done \
   && echo "*** Installing: coc ***" \
-  && $(cd /home/${user}/.vim/pack/ruby/start/ && git clone --branch master https://github.com/neoclide/coc.nvim.git --depth=1 2>/dev/null) \
+  && $(cd /home/${user}/.vim/pack/ruby/start/ && git clone --branch v0.0.82 https://github.com/neoclide/coc.nvim.git --depth=1 2>/dev/null) \
   && mkdir -p /home/${user}/.config/coc \
   && vim -c 'CocInstall -sync coc-solargraph coc-html coc-json coc-css|qall'
 
