@@ -15,11 +15,11 @@ RUN apk add --no-cache \
   libxml2-dev \
   libxslt-dev \
   npm \
-  openssl-dev \
   readline-dev \
   tidyhtml \
   yaml-dev \
   zlib-dev
+RUN if [ "$BUILD_RUBY_VERSION" = "2.7" ] ; then apk add --no-cache openssl1.1-compat-dev ; else apk add --no-cache openssl-dev ; fi
 
 ARG user=dev
 USER ${user}
