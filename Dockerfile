@@ -18,8 +18,8 @@ RUN apk add --no-cache \
   readline-dev \
   tidyhtml \
   yaml-dev \
-  zlib-dev
-RUN if [ "$BUILD_RUBY_VERSION" = "2.7" ] ; then apk add --no-cache openssl1.1-compat-dev ; else apk add --no-cache openssl-dev ; fi
+  zlib-dev \
+  openssl-dev
 
 ARG user=dev
 USER ${user}
