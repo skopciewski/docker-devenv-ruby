@@ -1,6 +1,7 @@
 {
   "diagnostic.displayByAle": true,
-  "solargraph.useBundler": true,
+  "solargraph.useBundler": false,
+  "solargraph.commandPath": "/home/dev/sbin/solargraph",
   "suggest.completionItemKindLabels": {
     "keyword": "\uf1de",
     "variable": "\ue79b",

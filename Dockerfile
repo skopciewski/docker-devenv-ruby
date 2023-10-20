@@ -54,7 +54,8 @@ RUN \
   && bundle config build.nokogiri --use-system-libraries \
   && bundle config path "${BUNDLE_APP_GEMS}" \
   && bundle config bin "${BUNDLE_APP_GEMS}/bin" \
-  && gem install pry json standardrb
+  && gem install pry json standardrb solargraph \
+  && ln -s `gem env gempath | cut -d ":" -f1`/bin/solargraph /home/dev/sbin/solargraph
 SHELL ["/bin/sh", "-c"]
 
 # configure npm
