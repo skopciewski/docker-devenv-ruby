@@ -5,7 +5,7 @@ set -eo pipefail
 DOCKER_IMAGE=skopciewski/devenv-ruby
 DEVDIR=/mnt/devdir
 XSOCK=/tmp/.X11-unix
-DBUSCOCK=/run/user/$(id -u)/bus
+DBUSCOCK=/run/user/$(id -u)
 DIR=$PWD
 
 calculate_share() {
@@ -43,7 +43,9 @@ run_devenv() {
   params+=" --net=host"
   params+=" -e TZ=$(timedatectl show --va -p Timezone)"
   params+=" -e DISPLAY"
+  params+=" -e WAYLAND_DISPLAY"
   params+=" -e SSH_AUTH_SOCK"
+  params+=" -e XDG_RUNTIME_DIR"
   params+=" -e DBUS_SESSION_BUS_ADDRESS"
   params+="$(check_tmuxp)"
   params+=" -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK)"
